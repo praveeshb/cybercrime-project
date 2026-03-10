@@ -209,6 +209,28 @@ def admin():
     return render_template("admin_login.html")
 
 
+@app.route('/police_login', methods=['GET', 'POST'])
+def police_login():
+
+    if request.method == "POST":
+
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = sqlite3.connect("database.db")
+
+        police = conn.execute(
+        "SELECT * FROM police WHERE username=? AND password=?",
+        (username, password)).fetchone()
+
+        conn.close()
+
+        if police:
+            return redirect("/police_dashboard")
+
+    return render_template("police_login.html")
+
+
 @app.route('/admin_dashboard')
 def admin_dashboard():
 

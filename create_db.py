@@ -19,6 +19,14 @@ password TEXT
 )
 """)
 
+conn.execute("""
+CREATE TABLE IF NOT EXISTS police(
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+username TEXT,
+password TEXT
+)
+""")
+
 conn.execute("DROP TABLE IF EXISTS complaint")
 
 conn.execute("""
@@ -32,6 +40,8 @@ status TEXT,
 evidence TEXT
 )
 """)
+
+conn.execute("INSERT INTO police (username, password) VALUES (?, ?)", ("police", "123"))
 
 conn.commit()
 conn.close()
