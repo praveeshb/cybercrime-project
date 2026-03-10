@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File Complaint</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+<div class="form-wrapper">
+<h2>📝 Submit Cyber Crime Complaint</h2>
+<form method="POST" enctype="multipart/form-data">
+<div class="form-group">
+<label>Your Name</label>
+<input type="text" name="user" required>
+</div>
+
+<div class="form-group">
+<label>Description of Incident</label>
+<textarea name="description" required placeholder="Describe the cybercrime incident in detail..."></textarea>
+</div>
+
+<div class="form-group">
+<label>Upload Evidence (Screenshot, Document, etc.)</label>
+<input type="file" name="evidence" required>
+</div>
+
+<button type="submit" class="btn btn-primary">Submit Complaint</button>
+</form>
+</div>
+</div>
+</body>
+</html>
