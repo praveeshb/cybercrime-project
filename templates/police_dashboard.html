@@ -8,31 +8,29 @@
 </head>
 <body>
 <div class="container">
-<h2>🚔 Police Dashboard - Cyber Crime Reports</h2>
-<div class="admin-stats">
-<p>Total Reports: <strong>{{data|length}}</strong></p>
-</div>
-<div class="table-wrapper">
-<table class="admin-table">
+<h2>Police Complaint Panel</h2>
+
+<table border="1">
 <tr>
-<th>ID</th>
-<th>Reporter Name</th>
-<th>Incident Description</th>
-<th class="status-col">Status</th>
-<th>Evidence File</th>
+<th>Tracking ID</th>
+<th>User</th>
+<th>Description</th>
+<th>Status</th>
 </tr>
-{% for row in data %}
+
+{% for c in complaints %}
+
 <tr>
-<td>#{{row[0]}}</td>
-<td>{{row[1]}}</td>
-<td>{{row[2][:50]}}...</td>
-<td><span class="status-badge status-{{row[3].lower()}}">{{row[3]}}</span></td>
-<td>{{row[4]}}</td>
+<td>{{c[1]}}</td>
+<td>{{c[2]}}</td>
+<td>{{c[3]}}</td>
+<td>{{c[4]}}</td>
 </tr>
+
 {% endfor %}
+
 </table>
-</div>
-<a href="/" class="btn btn-secondary">← Exit</a>
+<a href="/admin" class="btn btn-secondary">← Back to Admin</a>
 </div>
 </body>
 </html>

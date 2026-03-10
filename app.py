@@ -1,6 +1,8 @@
 from flask import Flask,render_template,request,redirect
 import sqlite3
 import os
+import random
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -74,34 +76,67 @@ def complaint():
 
         file=request.files["evidence"]
 
-        filename=file.filename
+        filename=secure_filename(file.filename)
 
         file.save(os.path.join(app.config["UPLOAD_FOLDER"],filename))
+
+        tracking_id = "CC" + str(random.randint(10000,99999))
 
         conn=db()
 
         conn.execute(
-        "INSERT INTO complaint(user,description,status,evidence) VALUES(?,?,?,?)",
-        (user,description,"Pending",filename))
+        "INSERT INTO complaint(tracking_id,user,description,status,evidence) VALUES(?,?,?,?,?)",
+        (tracking_id,user,description,"Pending",filename))
 
         conn.commit()
         conn.close()
 
-        return redirect("/status")
+        return redirect("/dashboard")
 
     return render_template("complaint.html")
 
 
-@app.route("/status")
+@app.route('/status', methods=['GET','POST'])
 def status():
 
-    conn=db()
+    status = None
 
-    data=conn.execute("SELECT * FROM complaint").fetchall()
+    if request.method == "POST":
+
+        tracking_id = request.form['tracking_id']
+
+        conn = db()
+
+        cur = conn.cursor()
+
+        cur.execute("SELECT status FROM complaint WHERE tracking_id=?", (tracking_id,))
+
+        data = cur.fetchone()
+
+        if data:
+            status = data[0]
+        else:
+            status = "Complaint Not Found"
+
+        conn.close()
+
+    return render_template("status.html", status=status)
+
+
+@app.route('/police_dashboard')
+def police_dashboard():
+
+    conn = db()
+
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM complaint")
+
+    data = cur.fetchall()
 
     conn.close()
 
-    return render_template("status.html",data=data)
+    return render_template("police_dashboard.html", complaints=data)
 
 
 @app.route("/admin",methods=["GET","POST"])

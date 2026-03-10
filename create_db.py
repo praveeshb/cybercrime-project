@@ -19,9 +19,12 @@ password TEXT
 )
 """)
 
+conn.execute("DROP TABLE IF EXISTS complaint")
+
 conn.execute("""
 CREATE TABLE IF NOT EXISTS complaint(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
+tracking_id TEXT,
 user TEXT,
 description TEXT,
 status TEXT,

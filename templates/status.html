@@ -8,27 +8,16 @@
 </head>
 <body>
 <div class="container">
-<h2>📋 Your Complaint Status</h2>
-<div class="table-wrapper">
-<table>
-<tr>
-<th>ID</th>
-<th>Your Name</th>
-<th>Description</th>
-<th class="status-col">Status</th>
-<th>Evidence</th>
-</tr>
-{% for row in data %}
-<tr>
-<td>{{row[0]}}</td>
-<td>{{row[1]}}</td>
-<td>{{row[2]}}</td>
-<td><span class="status-badge status-{{row[3].lower()}}">{{row[3]}}</span></td>
-<td>{{row[4]}}</td>
-</tr>
-{% endfor %}
-</table>
-</div>
+<h2>Check Complaint Status</h2>
+
+<form method="POST">
+<input type="text" name="tracking_id" placeholder="Enter Tracking ID">
+<button type="submit">Check</button>
+</form>
+
+{% if status %}
+<p>Status: {{status}}</p>
+{% endif %}
 <a href="/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
 </div>
 </body>
