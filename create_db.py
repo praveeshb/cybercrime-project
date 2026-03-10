@@ -3,7 +3,7 @@ import sqlite3
 conn = sqlite3.connect("database.db")
 
 conn.execute("""
-CREATE TABLE users(
+CREATE TABLE IF NOT EXISTS users(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
 email TEXT,
@@ -12,7 +12,7 @@ password TEXT
 """)
 
 conn.execute("""
-CREATE TABLE admin(
+CREATE TABLE IF NOT EXISTS admin(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 email TEXT,
 password TEXT
@@ -20,7 +20,7 @@ password TEXT
 """)
 
 conn.execute("""
-CREATE TABLE complaint(
+CREATE TABLE IF NOT EXISTS complaint(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 user TEXT,
 description TEXT,
