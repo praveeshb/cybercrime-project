@@ -1,38 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin Dashboard</title>
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<div class="container">
-<h2>👨‍💼 Admin Dashboard - All Complaints</h2>
-<div class="admin-stats">
-<p>Total Complaints: <strong>{{data|length}}</strong></p>
-</div>
-<div class="table-wrapper">
-<table class="admin-table">
-<tr>
-<th>ID</th>
-<th>User Name</th>
-<th>Description</th>
-<th class="status-col">Status</th>
-<th>Evidence</th>
-</tr>
-{% for row in data %}
-<tr>
-<td>#{{row[0]}}</td>
-<td>{{row[1]}}</td>
-<td>{{row[2][:50]}}...</td>
-<td><span class="status-badge status-{{row[3].lower()}}">{{row[3]}}</span></td>
-<td>{{row[4]}}</td>
-</tr>
-{% endfor %}
-</table>
-</div>
-<a href="/" class="btn btn-secondary">← Logout</a>
-</div>
+<h1>Admin Dashboard</h1>
+
+<a href="/police_dashboard">
+<button>View Complaints</button>
+</a>
+
+<a href="/users">
+<button>View Users</button>
+</a>
 </body>
 </html>

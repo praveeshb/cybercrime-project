@@ -25,7 +25,8 @@ conn.execute("""
 CREATE TABLE IF NOT EXISTS complaint(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 tracking_id TEXT,
-user TEXT,
+name TEXT,
+crime TEXT,
 description TEXT,
 status TEXT,
 evidence TEXT

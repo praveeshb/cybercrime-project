@@ -14,18 +14,33 @@
 
 <tr>
 <th>ID</th>
+<th>Tracking ID</th>
 <th>Crime</th>
-<th>Description</th>
 <th>Status</th>
+<th>Action</th>
 </tr>
 
 {% for c in complaints %}
 
 <tr>
+
 <td>{{c[0]}}</td>
 <td>{{c[1]}}</td>
-<td>{{c[2]}}</td>
-<td>{{c[4]}}</td>
+<td>{{c[3]}}</td>
+<td>{{c[5]}}</td>
+
+<td>
+
+<a href="/approve/{{c[0]}}">
+<button>Approve</button>
+</a>
+
+<a href="/reject/{{c[0]}}">
+<button>Reject</button>
+</a>
+
+</td>
+
 </tr>
 
 {% endfor %}

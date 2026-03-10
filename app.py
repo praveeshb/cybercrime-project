@@ -2,12 +2,16 @@ from flask import Flask,render_template,request,redirect
 import sqlite3
 import os
 import random
+import string
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "static/uploads"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+UPLOAD_FOLDER = "uploads"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def generate_tracking_id():
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
 
 def db():
     return sqlite3.connect("database.db")
@@ -71,27 +75,28 @@ def complaint():
 
     if request.method=="POST":
 
-        user=request.form["user"]
-        description=request.form["description"]
+        name = request.form['name']
+        crime = request.form['crime']
+        description = request.form['description']
 
-        file=request.files["evidence"]
+        file = request.files['evidence']
 
-        filename=secure_filename(file.filename)
+        filename = secure_filename(file.filename)
 
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"],filename))
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        tracking_id = "CC" + str(random.randint(10000,99999))
+        tracking_id = generate_tracking_id()
 
-        conn=db()
+        conn = sqlite3.connect("database.db")
+        cur = conn.cursor()
 
-        conn.execute(
-        "INSERT INTO complaint(tracking_id,user,description,status,evidence) VALUES(?,?,?,?,?)",
-        (tracking_id,user,description,"Pending",filename))
+        cur.execute("INSERT INTO complaint(tracking_id,name,crime,description,status,evidence) VALUES(?,?,?,?,?,?)",
+        (tracking_id,name,crime,description,"Pending",filename))
 
         conn.commit()
         conn.close()
 
-        return redirect("/dashboard")
+        return "Complaint Submitted. Your Tracking ID: " + tracking_id
 
     return render_template("complaint.html")
 
@@ -139,6 +144,49 @@ def police_dashboard():
     return render_template("police_dashboard.html", complaints=data)
 
 
+@app.route('/approve/<int:id>')
+def approve(id):
+
+    conn = sqlite3.connect("database.db")
+    cur = conn.cursor()
+
+    cur.execute("UPDATE complaint SET status='Approved' WHERE id=?", (id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/police_dashboard")
+
+
+@app.route('/reject/<int:id>')
+def reject(id):
+
+    conn = sqlite3.connect("database.db")
+    cur = conn.cursor()
+
+    cur.execute("UPDATE complaint SET status='Rejected' WHERE id=?", (id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/police_dashboard")
+
+
+@app.route('/users')
+def users():
+
+    conn = sqlite3.connect("database.db")
+    cur = conn.cursor()
+
+    cur.execute("SELECT * FROM users")
+
+    data = cur.fetchall()
+
+    conn.close()
+
+    return render_template("users.html", users=data)
+
+
 @app.route("/admin",methods=["GET","POST"])
 def admin():
 
@@ -159,6 +207,12 @@ def admin():
             return redirect("/admin_dashboard")
 
     return render_template("admin_login.html")
+
+
+@app.route('/admin_dashboard')
+def admin_dashboard():
+
+    return render_template("admin_dashboard.html")
 
 
 @app.route("/admin_dashboard")

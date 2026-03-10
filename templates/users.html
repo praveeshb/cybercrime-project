@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Users</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<h1>Registered Users</h1>
+
+<table border="1">
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Email</th>
+</tr>
+
+{% for u in users %}
+<tr>
+<td>{{u[0]}}</td>
+<td>{{u[1]}}</td>
+<td>{{u[2]}}</td>
+</tr>
+{% endfor %}
+</table>
+
+<a href="/admin_dashboard">
+<button>Back to Admin</button>
+</a>
+</body>
+</html>

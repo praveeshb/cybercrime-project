@@ -11,22 +11,17 @@
 <div class="form-wrapper">
 <h2>📝 Submit Cyber Crime Complaint</h2>
 <form method="POST" enctype="multipart/form-data">
-<div class="form-group">
-<label>Your Name</label>
-<input type="text" name="user" required>
-</div>
 
-<div class="form-group">
-<label>Description of Incident</label>
-<textarea name="description" required placeholder="Describe the cybercrime incident in detail..."></textarea>
-</div>
+<input type="text" name="name" placeholder="Your Name" required><br><br>
 
-<div class="form-group">
-<label>Upload Evidence (Screenshot, Document, etc.)</label>
-<input type="file" name="evidence" required>
-</div>
+<input type="text" name="crime" placeholder="Crime Type"><br><br>
 
-<button type="submit" class="btn btn-primary">Submit Complaint</button>
+<textarea name="description" placeholder="Complaint"></textarea><br><br>
+
+<input type="file" name="evidence"><br><br>
+
+<button type="submit">Submit Complaint</button>
+
 </form>
 </div>
 </div>
