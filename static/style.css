@@ -282,3 +282,23 @@ p a:hover {
   color: #764ba2;
   text-decoration: underline;
 }
+
+.police-btn{
+    background: linear-gradient(45deg,#1e3c72,#2a5298);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    font-size: 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+.police-btn:hover{
+    transform: scale(1.08);
+    background: linear-gradient(45deg,#2a5298,#1e3c72);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+    letter-spacing:1px;
+}
