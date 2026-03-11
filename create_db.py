@@ -1,47 +1,30 @@
 import sqlite3
 
 conn = sqlite3.connect("database.db")
+cur = conn.cursor()
 
-conn.execute("""
+# USERS TABLE
+cur.execute("""
 CREATE TABLE IF NOT EXISTS users(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT,
 email TEXT,
-password TEXT
+password TEXT,
+role TEXT
 )
 """)
 
-conn.execute("""
-CREATE TABLE IF NOT EXISTS admin(
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-email TEXT,
-password TEXT
-)
-""")
-
-conn.execute("""
-CREATE TABLE IF NOT EXISTS police(
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-username TEXT,
-password TEXT
-)
-""")
-
-conn.execute("DROP TABLE IF EXISTS complaint")
-
-conn.execute("""
-CREATE TABLE IF NOT EXISTS complaint(
+# COMPLAINT TABLE
+cur.execute("""
+CREATE TABLE IF NOT EXISTS complaints(
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 tracking_id TEXT,
-name TEXT,
-crime TEXT,
+user_id INTEGER,
 description TEXT,
-status TEXT,
-evidence TEXT
+evidence TEXT,
+status TEXT
 )
 """)
-
-conn.execute("INSERT INTO police (username, password) VALUES (?, ?)", ("police", "123"))
 
 conn.commit()
 conn.close()

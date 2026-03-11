@@ -1,16 +1,29 @@
 from flask import Flask,render_template,request,redirect,session
 import sqlite3
+import uuid
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key="secret"
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
+# Create uploads folder if it doesn't exist
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 
 def get_db():
     return sqlite3.connect("database.db")
 
 
+# HOME
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
 # LOGIN
-@app.route("/",methods=["GET","POST"])
+@app.route("/login",methods=["GET","POST"])
 def login():
 
     if request.method=="POST":
@@ -44,6 +57,31 @@ def login():
     return render_template("login.html")
 
 
+# REGISTER
+@app.route("/register",methods=["GET","POST"])
+def register():
+
+    if request.method=="POST":
+
+        name=request.form["name"]
+        email=request.form["email"]
+        password=request.form["password"]
+
+        conn=get_db()
+        cur=conn.cursor()
+
+        cur.execute(
+        "INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)",
+        (name,email,password,"user"))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/login")
+
+    return render_template("register.html")
+
+
 # ADMIN DASHBOARD
 @app.route("/admin")
 def admin():
@@ -54,11 +92,12 @@ def admin():
     conn=get_db()
     cur=conn.cursor()
 
-    complaints=cur.execute("SELECT * FROM complaint").fetchall()
+    users=cur.execute("SELECT * FROM users").fetchall()
+    complaints=cur.execute("SELECT * FROM complaints").fetchall()
 
     conn.close()
 
-    return render_template("admin_dashboard.html",complaints=complaints)
+    return render_template("admin_dashboard.html",users=users,complaints=complaints)
 
 
 # POLICE DASHBOARD
@@ -71,7 +110,7 @@ def police():
     conn=get_db()
     cur=conn.cursor()
 
-    complaints=cur.execute("SELECT * FROM complaint").fetchall()
+    complaints=cur.execute("SELECT * FROM complaints").fetchall()
 
     conn.close()
 
@@ -95,19 +134,29 @@ def complaint():
     if request.method=="POST":
 
         description=request.form["description"]
+        tracking_id=str(uuid.uuid4())[:8]
         user_id=session["user_id"]
+        evidence=""
+
+        # Handle file upload
+        if "evidence" in request.files:
+            file=request.files["evidence"]
+            if file and file.filename!="":
+                filename=secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+                evidence=filename
 
         conn=get_db()
         cur=conn.cursor()
 
         cur.execute(
-        "INSERT INTO complaint(user_id,description,status) VALUES(?,?,?)",
-        (user_id,description,"Pending"))
+        "INSERT INTO complaints(tracking_id,user_id,description,evidence,status) VALUES(?,?,?,?,?)",
+        (tracking_id,user_id,description,evidence,"Pending"))
 
         conn.commit()
         conn.close()
 
-        return redirect("/user")
+        return f"Complaint Submitted. Tracking ID: {tracking_id}"
 
     return render_template("complaint.html")
 
@@ -119,7 +168,7 @@ def update(id):
     conn=get_db()
     cur=conn.cursor()
 
-    cur.execute("UPDATE complaint SET status='Investigating' WHERE id=?",(id,))
+    cur.execute("UPDATE complaints SET status='Investigating' WHERE id=?",(id,))
 
     conn.commit()
     conn.close()
