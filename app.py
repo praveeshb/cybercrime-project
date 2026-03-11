@@ -226,13 +226,6 @@ def police_login():
 
     return render_template("police_login.html")
 
-
-@app.route('/admin_dashboard')
-def admin_dashboard():
-
-    return render_template("admin_dashboard.html")
-
-
 @app.route("/admin_dashboard")
 def admin_dashboard():
 
