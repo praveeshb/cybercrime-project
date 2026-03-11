@@ -5,7 +5,7 @@ import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key="secret"
+app.secret_key="cybercrime_secret"
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # Create uploads folder if it doesn't exist
@@ -34,21 +34,21 @@ def login():
 
         conn.close()
 
-        if user:
+        if user is None:
+            return "Invalid Login"
 
-            session["user_id"]=user[0]
-            session["role"]=user[4]
+        # Save session
+        session["user_id"]=user[0]
+        session["role"]=user[4]
 
-            if user[4]=="admin":
-                return redirect("/admin")
+        if user[4]=="admin":
+            return redirect("/admin_dashboard")
 
-            elif user[4]=="police":
-                return redirect("/police")
+        elif user[4]=="police":
+            return redirect("/police_dashboard")
 
-            else:
-                return redirect("/user")
-
-        return "Invalid Login"
+        else:
+            return redirect("/user_dashboard")
 
     return render_template("login.html")
 
@@ -79,8 +79,8 @@ def register():
 
 
 # ADMIN DASHBOARD
-@app.route("/admin")
-def admin():
+@app.route("/admin_dashboard")
+def admin_dashboard():
 
     if session.get("role")!="admin":
         return redirect("/")
@@ -89,28 +89,20 @@ def admin():
     cur=conn.cursor()
 
     users=cur.execute("SELECT * FROM users").fetchall()
-    complaints=cur.execute("SELECT * FROM complaints").fetchall()
 
     conn.close()
 
-    return render_template("admin_dashboard.html",users=users,complaints=complaints)
+    return render_template("admin_dashboard.html",users=users)
 
 
 # POLICE DASHBOARD
-@app.route("/police")
-def police():
+@app.route("/police_dashboard")
+def police_dashboard():
 
     if session.get("role")!="police":
         return redirect("/")
 
-    conn=get_db()
-    cur=conn.cursor()
-
-    complaints=cur.execute("SELECT * FROM complaints").fetchall()
-
-    conn.close()
-
-    return render_template("police_dashboard.html",complaints=complaints)
+    return render_template("police_dashboard.html")
 
 
 # USER DASHBOARD
