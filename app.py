@@ -16,14 +16,8 @@ def get_db():
     return sqlite3.connect("database.db")
 
 
-# HOME
-@app.route("/")
-def home():
-    return render_template("index.html")
-
-
-# LOGIN
-@app.route("/login",methods=["GET","POST"])
+# LOGIN (HOMEPAGE)
+@app.route("/", methods=["GET","POST"])
 def login():
 
     if request.method=="POST":
@@ -54,6 +48,8 @@ def login():
             else:
                 return redirect("/user")
 
+        return "Invalid Login"
+
     return render_template("login.html")
 
 
@@ -77,7 +73,7 @@ def register():
         conn.commit()
         conn.close()
 
-        return redirect("/login")
+        return redirect("/")
 
     return render_template("register.html")
 
