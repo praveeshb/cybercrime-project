@@ -1,26 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cyber Crime Reporting System</title>
-<link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cybercrime Complaint Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .hero-section {
+            text-align: center;
+            color: white;
+            width: 100%;
+        }
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .hero-section p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        .btn-custom {
+            padding: 12px 30px;
+            font-size: 1rem;
+            margin: 10px;
+            border-radius: 50px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn-primary-custom {
+            background-color: #fff;
+            color: #667eea;
+        }
+        .btn-info-custom {
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+        .btn-info-custom:hover {
+            background-color: rgba(255,255,255,0.3);
+            color: white;
+        }
+        .features {
+            max-width: 600px;
+            margin: 40px auto 0;
+        }
+        .features h4 {
+            margin-top: 40px;
+            font-weight: bold;
+        }
+        .features ul {
+            text-align: left;
+            list-style: none;
+            padding: 0;
+        }
+        .features ul li {
+            padding: 8px 0;
+            font-size: 1.1rem;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<div class="header">
-<h1>🛡️ Cyber Crime Reporting System</h1>
-<p>Report cybercrime and track your complaints</p>
-</div>
+    <div class="container">
+        <div class="hero-section">
+            <h1>🛡️ Cybercrime Complaint Portal</h1>
+            <p>Report cyber crimes and track your complaint securely</p>
+            
+            <div>
+                <a href="/register" class="btn-custom btn-primary-custom">Register as User</a>
+                <a href="/login" class="btn-custom btn-info-custom">User Login</a>
+                <a href="/admin_login" class="btn-custom btn-info-custom">Admin Login</a>
+                <a href="/police_login" class="btn-custom btn-info-custom">Police Login</a>
+            </div>
 
-<div class="button-group">
-<a href="/register" class="btn btn-primary">👤 User Register</a>
-<a href="/login" class="btn btn-primary">🔑 User Login</a>
-<a href="/admin" class="btn btn-danger">👨‍💼 Admin Login</a>
-<a href="/police_login">
-<button class="police-btn">👮 Police Login</button>
-</a>
-</div>
-</div>
+            <hr class="my-5" style="border-color: rgba(255,255,255,0.3);">
+
+            <div class="features">
+                <h4>Features</h4>
+                <ul>
+                    <li>✅ Easy Complaint Registration</li>
+                    <li>✅ Real-time Status Tracking</li>
+                    <li>✅ Secure Admin Dashboard</li>
+                    <li>✅ Police Department Integration</li>
+                    <li>✅ User Account Management</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,24 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Complaint Status</title>
-<link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint Status</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 0;
+        }
+        .status-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        .status-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .status-pending {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .status-approved {
+            background-color: #28a745;
+            color: white;
+        }
+        .status-rejected {
+            background-color: #dc3545;
+            color: white;
+        }
+        .status-in-progress {
+            background-color: #17a2b8;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<h2>Check Complaint Status</h2>
+    <div class="status-container">
+        <h2>📊 Your Complaint Status</h2>
 
-<form method="POST">
-<input type="text" name="tracking_id" placeholder="Enter Tracking ID">
-<button type="submit">Check</button>
-</form>
+        {% if data %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Complaint ID</th>
+                            <th>Description</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in data %}
+                        <tr>
+                            <td><strong>#{{ item[0] }}</strong></td>
+                            <td>{{ item[1] if item[1] else 'N/A' }}</td>
+                            <td>
+                                {% if item[2] == 'Pending' %}
+                                    <span class="status-badge status-pending">Pending</span>
+                                {% elif item[2] == 'Approved' %}
+                                    <span class="status-badge status-approved">Approved</span>
+                                {% elif item[2] == 'Rejected' %}
+                                    <span class="status-badge status-rejected">Rejected</span>
+                                {% elif item[2] == 'In Progress' %}
+                                    <span class="status-badge status-in-progress">In Progress</span>
+                                {% else %}
+                                    <span class="status-badge" style="background-color: #6c757d; color: white;">{{ item[2] if item[2] else 'Not Updated' }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <strong>No complaints found.</strong> Submit a complaint to track its status here.
+            </div>
+        {% endif %}
 
-{% if status %}
-<p>Status: {{status}}</p>
-{% endif %}
-<a href="/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
-</div>
+        <hr>
+        <a href="/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
