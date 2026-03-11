@@ -7,8 +7,11 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "uploads"
+UPLOAD_FOLDER = "static/uploads"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# ensure upload folder is created (important for Render)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def generate_tracking_id():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
@@ -209,24 +212,17 @@ def admin():
     return render_template("admin_login.html")
 
 
-@app.route('/police_login', methods=['GET', 'POST'])
+@app.route("/police_login", methods=["GET", "POST"])
 def police_login():
 
     if request.method == "POST":
 
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form["username"]
+        password = request.form["password"]
 
-        conn = sqlite3.connect("database.db")
-
-        police = conn.execute(
-        "SELECT * FROM police WHERE username=? AND password=?",
-        (username, password)).fetchone()
-
-        conn.close()
-
-        if police:
-            return redirect("/police_dashboard")
+        # simple check (replace with DB lookup if needed)
+        if username == "police" and password == "123":
+            return redirect("/police")
 
     return render_template("police_login.html")
 
