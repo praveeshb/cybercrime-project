@@ -18,10 +18,11 @@
 <table>
 
 <tr>
-<th>ID</th>
+<th>User ID</th>
 <th>Name</th>
 <th>Email</th>
-<th>Password</th>
+<th>Address</th>
+<th>Phone</th>
 </tr>
 
 {% for u in users %}
@@ -30,33 +31,32 @@
 <td>{{u[0]}}</td>
 <td>{{u[1]}}</td>
 <td>{{u[2]}}</td>
-<td>{{u[3]}}</td>
+<td>{{u[4]}}</td>
+<td>{{u[5]}}</td>
 </tr>
 
 {% endfor %}
 
 </table>
 
-<h3>Complaints</h3>
+<h3>Police Departments</h3>
 
 <table>
 
 <tr>
-<th>ID</th>
-<th>Tracking ID</th>
-<th>User</th>
-<th>Description</th>
-<th>Status</th>
+<th>Dept ID</th>
+<th>Officer Name</th>
+<th>Phone</th>
+<th>Email</th>
 </tr>
 
-{% for c in complaints %}
+{% for d in departments %}
 
 <tr>
-<td>{{c[0]}}</td>
-<td>{{c[1]}}</td>
-<td>{{c[2]}}</td>
-<td>{{c[3]}}</td>
-<td>{{c[5]}}</td>
+<td>{{d[0]}}</td>
+<td>{{d[1]}}</td>
+<td>{{d[2]}}</td>
+<td>{{d[3]}}</td>
 </tr>
 
 {% endfor %}
