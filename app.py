@@ -41,7 +41,7 @@ def login():
             dept = cur.execute(
                 "SELECT * FROM police_department WHERE email=?",
                 (email,)).fetchone()
-            if dept and check_password_hash(dept[3], password):
+            if dept and check_password_hash(dept[4], password):
                 session["dept_id"] = dept[0]
                 session["role"] = "police"
                 conn.close()
