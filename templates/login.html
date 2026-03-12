@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login</title>
+<title>Login - Cyber Crime System</title>
 <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
 </head>
 
@@ -19,16 +19,15 @@
 
 <select name="user_type" required>
     <option value="">Select User Type</option>
-    <option value="user">User</option>
-    <option value="police">Police Department</option>
     <option value="admin">Admin</option>
+    <option value="police">Police Officer</option>
 </select>
 
 <button type="submit">Login</button>
 
 </form>
 
-<p><a href="/register">Register as New User</a></p>
+<p><a href="/complaint">Submit a Complaint</a></p>
 
 </div>
 

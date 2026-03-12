@@ -6,23 +6,21 @@ cur = conn.cursor()
 
 # Insert demo admin
 cur.execute("INSERT INTO admin(name,email,password) VALUES(?,?,?)", 
-           ("Admin User", "admin@gmail.com", generate_password_hash("123")))
+           ("System Admin", "admin@cybercrime.gov", generate_password_hash("admin123")))
 
-# Insert demo police departments
-cur.execute("INSERT INTO police_department(officer_name,phone,email,password) VALUES(?,?,?,?)", 
-           ("Officer Smith", "555-0101", "cyber@police.gov", generate_password_hash("123")))
-cur.execute("INSERT INTO police_department(officer_name,phone,email,password) VALUES(?,?,?,?)", 
-           ("Officer Johnson", "555-0102", "fraud@police.gov", generate_password_hash("123")))
-
-# Insert demo user
-cur.execute("INSERT INTO users(name,email,password,address,phone) VALUES(?,?,?,?,?)", 
-           ("John Doe", "user@gmail.com", generate_password_hash("123"), "123 Main St", "555-0123"))
+# Insert demo police officers
+cur.execute("INSERT INTO police(name,email,password,department) VALUES(?,?,?,?)", 
+           ("Officer Smith", "cyber@police.gov", generate_password_hash("police123"), "Cyber Crime"))
+cur.execute("INSERT INTO police(name,email,password,department) VALUES(?,?,?,?)", 
+           ("Officer Johnson", "fraud@police.gov", generate_password_hash("police123"), "Fraud Investigation"))
+cur.execute("INSERT INTO police(name,email,password,department) VALUES(?,?,?,?)", 
+           ("Officer Davis", "investigation@police.gov", generate_password_hash("police123"), "General Investigation"))
 
 conn.commit()
 conn.close()
 
 print("Demo accounts created:")
-print("Admin: admin@gmail.com / 123")
-print("Police (Cyber): cyber@police.gov / 123")
-print("Police (Fraud): fraud@police.gov / 123")
-print("User: user@gmail.com / 123")
+print("Admin: admin@cybercrime.gov / admin123")
+print("Police (Cyber): cyber@police.gov / police123")
+print("Police (Fraud): fraud@police.gov / police123")
+print("Police (Investigation): investigation@police.gov / police123")

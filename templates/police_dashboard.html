@@ -18,7 +18,8 @@
 <tr>
 <th>Complaint ID</th>
 <th>Tracking ID</th>
-<th>User Name</th>
+<th>Name</th>
+<th>Email</th>
 <th>Description</th>
 <th>Status</th>
 <th>Action</th>
@@ -28,22 +29,28 @@
 
 <tr>
 <td>{{c[0]}}</td>
-<td>{{c[5]}}</td>
+<td>{{c[8]}}</td>
+<td>{{c[1]}}</td>
+<td>{{c[2]}}</td>
+<td>{{c[4][:50]}}...</td>
 <td>{{c[6]}}</td>
-<td>{{c[2][:50]}}...</td>
-<td>Pending</td>
 
 <td>
+{% if not c[7] %}
+<form method="POST" action="/assign/{{c[0]}}" style="display:inline;">
+<button type="submit">Assign to Me</button>
+</form>
+{% else %}
 <form method="POST" action="/update_status/{{c[0]}}" style="display:inline;">
-<select name="progress" required>
+<select name="status" required>
 <option value="">Select Status</option>
-<option value="Pending">Pending</option>
-<option value="In Progress">In Progress</option>
+<option value="Investigating">Investigating</option>
 <option value="Resolved">Resolved</option>
 <option value="Rejected">Rejected</option>
 </select>
 <button type="submit">Update</button>
 </form>
+{% endif %}
 </td>
 
 </tr>
@@ -52,7 +59,7 @@
 
 {% if not complaints %}
 <tr>
-<td colspan="6">No complaints assigned to your department</td>
+<td colspan="7">No complaints available</td>
 </tr>
 {% endif %}
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Complaint</title>
+<title>Submit Complaint</title>
 <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
 </head>
 
@@ -9,30 +9,29 @@
 
 <div class="container">
 
-<h2>Submit Complaint</h2>
+<h2>Submit Cyber Crime Complaint</h2>
 
 <form method="POST" enctype="multipart/form-data">
 
-<textarea name="description" placeholder="Describe cyber crime" style="width:90%;height:100px;" required></textarea>
+<input type="text" name="name" placeholder="Your Name" required>
+
+<input type="email" name="email" placeholder="Your Email" required>
+
+<input type="tel" name="phone" placeholder="Your Phone Number" required>
+
+<textarea name="description" placeholder="Describe the cyber crime incident..." style="width:90%;height:120px;" required></textarea>
 
 <br><br>
 
-<select name="dept_id" required style="width:90%; padding:10px; border:1px solid #ccc; border-radius:5px;">
-    <option value="">Select Department</option>
-    {% for dept in departments %}
-    <option value="{{ dept[0] }}">{{ dept[1] }} - {{ dept[3] }}</option>
-    {% endfor %}
-</select>
-
-<br><br>
-
-<input type="file" name="evidence" accept="image/*" style="width:90%;">
+<input type="file" name="evidence" accept="image/*,application/pdf" style="width:90%;">
 
 <br><br>
 
 <button type="submit">Submit Complaint</button>
 
 </form>
+
+<p><a href="/">Back to Login</a></p>
 
 </div>
 

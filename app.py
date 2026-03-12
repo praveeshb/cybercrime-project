@@ -23,38 +23,29 @@ def login():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
-        user_type = request.form.get("user_type", "user")
+        user_type = request.form.get("user_type", "admin")
         
         conn = get_db()
         cur = conn.cursor()
         
         if user_type == "admin":
-            user = cur.execute(
+            admin = cur.execute(
                 "SELECT * FROM admin WHERE email=?",
                 (email,)).fetchone()
-            if user and check_password_hash(user[3], password):
-                session["admin_id"] = user[0]
+            if admin and check_password_hash(admin[3], password):
+                session["admin_id"] = admin[0]
                 session["role"] = "admin"
                 conn.close()
                 return redirect("/admin_dashboard")
         elif user_type == "police":
-            dept = cur.execute(
-                "SELECT * FROM police_department WHERE email=?",
+            police = cur.execute(
+                "SELECT * FROM police WHERE email=?",
                 (email,)).fetchone()
-            if dept and check_password_hash(dept[4], password):
-                session["dept_id"] = dept[0]
+            if police and check_password_hash(police[3], password):
+                session["police_id"] = police[0]
                 session["role"] = "police"
                 conn.close()
                 return redirect("/police_dashboard")
-        else:
-            user = cur.execute(
-                "SELECT * FROM users WHERE email=?",
-                (email,)).fetchone()
-            if user and check_password_hash(user[3], password):
-                session["user_id"] = user[0]
-                session["role"] = "user"
-                conn.close()
-                return redirect("/user_dashboard")
         
         conn.close()
         return "Invalid Login"
@@ -62,49 +53,21 @@ def login():
     return render_template("login.html")
 
 
-# REGISTER
-@app.route("/register",methods=["GET","POST"])
-def register():
-    if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
-        password = request.form["password"]
-        address = request.form.get("address", "")
-        phone = request.form.get("phone", "")
-        
-        hashed_password = generate_password_hash(password)
-        
-        conn = get_db()
-        cur = conn.cursor()
-        
-        cur.execute(
-            "INSERT INTO users(name,email,password,address,phone) VALUES(?,?,?,?,?)",
-            (name, email, hashed_password, address, phone))
-        
-        conn.commit()
-        conn.close()
-        
-        return redirect("/")
-    
-    return render_template("register.html")
-
-
 # ADMIN DASHBOARD
 @app.route("/admin_dashboard")
 def admin_dashboard():
-
-    if session.get("role")!="admin":
+    if session.get("role") != "admin":
         return redirect("/")
-
-    conn=get_db()
-    cur=conn.cursor()
-
-    users=cur.execute("SELECT * FROM users").fetchall()
-    departments=cur.execute("SELECT * FROM police_department").fetchall()
-
+    
+    conn = get_db()
+    cur = conn.cursor()
+    
+    police = cur.execute("SELECT * FROM police").fetchall()
+    complaints = cur.execute("SELECT * FROM complaints").fetchall()
+    
     conn.close()
-
-    return render_template("admin_dashboard.html",users=users, departments=departments)
+    
+    return render_template("admin_dashboard.html", police=police, complaints=complaints)
 
 
 # POLICE DASHBOARD
@@ -113,56 +76,29 @@ def police_dashboard():
     if session.get("role") != "police":
         return redirect("/")
     
-    dept_id = session["dept_id"]
+    police_id = session["police_id"]
     conn = get_db()
     cur = conn.cursor()
     
     complaints = cur.execute("""
-        SELECT c.*, u.name as user_name 
-        FROM complaints c 
-        JOIN users u ON c.user_id = u.user_id 
-        WHERE c.dept_id = ?
-    """, (dept_id,)).fetchall()
+        SELECT * FROM complaints 
+        WHERE assigned_police_id = ? OR assigned_police_id IS NULL
+    """, (police_id,)).fetchall()
     
     conn.close()
     
     return render_template("police_dashboard.html", complaints=complaints)
 
 
-# USER DASHBOARD
-@app.route("/user_dashboard")
-def user_dashboard():
-    if session.get("role") != "user":
-        return redirect("/")
-    
-    user_id = session["user_id"]
-    conn = get_db()
-    cur = conn.cursor()
-    
-    complaints = cur.execute("""
-        SELECT c.*, pd.officer_name, s.progress 
-        FROM complaints c 
-        LEFT JOIN police_department pd ON c.dept_id = pd.dept_id 
-        LEFT JOIN status s ON c.complaint_id = s.complaint_id 
-        WHERE c.user_id = ?
-    """, (user_id,)).fetchall()
-    
-    conn.close()
-    
-    return render_template("user_dashboard.html", complaints=complaints)
-
-
-# SUBMIT COMPLAINT
-@app.route("/complaint",methods=["GET","POST"])
+# COMPLAINT FORM (Public)
+@app.route("/complaint", methods=["GET", "POST"])
 def complaint():
     if request.method == "POST":
-        if session.get("role") != "user":
-            return redirect("/")
-        
+        name = request.form["name"]
+        email = request.form["email"]
+        phone = request.form["phone"]
         description = request.form["description"]
-        dept_id = request.form["dept_id"]
         tracking_id = str(uuid.uuid4())[:8]
-        user_id = session["user_id"]
         
         evidence = ""
         if "evidence" in request.files:
@@ -176,48 +112,57 @@ def complaint():
         cur = conn.cursor()
         
         cur.execute("""
-            INSERT INTO complaints(user_id, description, dept_id, complaint_data, tracking_id) 
-            VALUES(?,?,?,?,?)
-        """, (user_id, description, dept_id, evidence, tracking_id))
-        
-        complaint_id = cur.lastrowid
-        
-        cur.execute("""
-            INSERT INTO status(complaint_id, department_id, progress) 
-            VALUES(?,?,?)
-        """, (complaint_id, dept_id, "Pending"))
+            INSERT INTO complaints(name, email, phone, description, evidence, tracking_id) 
+            VALUES(?,?,?,?,?,?)
+        """, (name, email, phone, description, evidence, tracking_id))
         
         conn.commit()
         conn.close()
         
         return f"Complaint Submitted. Tracking ID: {tracking_id}"
     
-    # Get departments for dropdown
-    conn = get_db()
-    cur = conn.cursor()
-    departments = cur.execute("SELECT * FROM police_department").fetchall()
-    conn.close()
-    
-    return render_template("complaint.html", departments=departments)
+    return render_template("complaint.html")
 
 
-# UPDATE STATUS (POLICE)
-@app.route("/update_status/<int:complaint_id>", methods=["POST"])
-def update_status(complaint_id):
+# ASSIGN COMPLAINT (Police)
+@app.route("/assign/<int:complaint_id>", methods=["POST"])
+def assign_complaint(complaint_id):
     if session.get("role") != "police":
         return redirect("/")
     
-    progress = request.form["progress"]
-    dept_id = session["dept_id"]
+    police_id = session["police_id"]
     
     conn = get_db()
     cur = conn.cursor()
     
     cur.execute("""
-        UPDATE status 
-        SET progress = ? 
-        WHERE complaint_id = ? AND department_id = ?
-    """, (progress, complaint_id, dept_id))
+        UPDATE complaints 
+        SET assigned_police_id = ?, status = 'Investigating' 
+        WHERE complaint_id = ?
+    """, (police_id, complaint_id))
+    
+    conn.commit()
+    conn.close()
+    
+    return redirect("/police_dashboard")
+
+
+# UPDATE STATUS (Police)
+@app.route("/update_status/<int:complaint_id>", methods=["POST"])
+def update_status(complaint_id):
+    if session.get("role") != "police":
+        return redirect("/")
+    
+    status = request.form["status"]
+    
+    conn = get_db()
+    cur = conn.cursor()
+    
+    cur.execute("""
+        UPDATE complaints 
+        SET status = ? 
+        WHERE complaint_id = ?
+    """, (status, complaint_id))
     
     conn.commit()
     conn.close()
