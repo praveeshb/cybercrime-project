@@ -12,8 +12,6 @@ cur.execute("INSERT INTO admin(name,email,password) VALUES(?,?,?)",
 cur.execute("INSERT INTO police(name,email,password,department) VALUES(?,?,?,?)", 
            ("Officer Smith", "cyber@police.gov", generate_password_hash("police123"), "Cyber Crime"))
 cur.execute("INSERT INTO police(name,email,password,department) VALUES(?,?,?,?)", 
-           ("Officer Johnson", "fraud@police.gov", generate_password_hash("police123"), "Fraud Investigation"))
-cur.execute("INSERT INTO police(name,email,password,department) VALUES(?,?,?,?)", 
            ("Officer Davis", "investigation@police.gov", generate_password_hash("police123"), "General Investigation"))
 
 conn.commit()
@@ -22,5 +20,4 @@ conn.close()
 print("Demo accounts created:")
 print("Admin: admin@cybercrime.gov / admin123")
 print("Police (Cyber): cyber@police.gov / police123")
-print("Police (Fraud): fraud@police.gov / police123")
 print("Police (Investigation): investigation@police.gov / police123")
