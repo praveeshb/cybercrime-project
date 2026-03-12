@@ -122,15 +122,21 @@ def user_dashboard():
     return render_template("user_dashboard.html", complaints=complaints)
 
 
-# COMPLAINT FORM (Public)
+# COMPLAINT FORM (User Only)
 @app.route("/complaint", methods=["GET", "POST"])
 def complaint():
+    if session.get("role") != "user":
+        return redirect("/")
+    
     if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
-        phone = request.form["phone"]
+        user_id = session["user_id"]
         description = request.form["description"]
         tracking_id = str(uuid.uuid4())[:8]
+        
+        # Get user details from database
+        conn = get_db()
+        cur = conn.cursor()
+        user = cur.execute("SELECT * FROM users WHERE user_id=?", (user_id,)).fetchone()
         
         evidence = ""
         if "evidence" in request.files:
@@ -140,13 +146,10 @@ def complaint():
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 evidence = filename
         
-        conn = get_db()
-        cur = conn.cursor()
-        
         cur.execute("""
-            INSERT INTO complaints(name, email, phone, description, evidence, tracking_id) 
-            VALUES(?,?,?,?,?,?)
-        """, (name, email, phone, description, evidence, tracking_id))
+            INSERT INTO complaints(user_id, name, email, phone, description, evidence, tracking_id) 
+            VALUES(?,?,?,?,?,?,?)
+        """, (user_id, user[1], user[2], user[5], description, evidence, tracking_id))
         
         conn.commit()
         conn.close()
