@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="nav">
+<a href="/logout">Logout</a>
+</div>
+
+<h2>User Dashboard</h2>
+
+<h3>Your Complaints</h3>
+
+<table>
+
+<tr>
+<th>Complaint ID</th>
+<th>Tracking ID</th>
+<th>Description</th>
+<th>Status</th>
+<th>Assigned Police</th>
+</tr>
+
+{% for c in complaints %}
+
+<tr>
+<td>{{c[0]}}</td>
+<td>{{c[8]}}</td>
+<td>{{c[4][:50]}}...</td>
+<td>{{c[6]}}</td>
+<td>{{c[9] if c[9] else 'Not Assigned'}}</td>
+</tr>
+
+{% endfor %}
+
+{% if not complaints %}
+<tr>
+<td colspan="5">No complaints submitted yet</td>
+</tr>
+{% endif %}
+
+</table>
+
+<br><br>
+
+<a href="/complaint">Submit New Complaint</a>
+
+</body>
+</html>

@@ -23,7 +23,7 @@ def login():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
-        user_type = request.form.get("user_type", "admin")
+        user_type = request.form.get("user_type", "user")
         
         conn = get_db()
         cur = conn.cursor()
@@ -46,6 +46,15 @@ def login():
                 session["role"] = "police"
                 conn.close()
                 return redirect("/police_dashboard")
+        else:  # Regular user
+            user = cur.execute(
+                "SELECT * FROM users WHERE email=?",
+                (email,)).fetchone()
+            if user and check_password_hash(user[3], password):
+                session["user_id"] = user[0]
+                session["role"] = "user"
+                conn.close()
+                return redirect("/user_dashboard")
         
         conn.close()
         return "Invalid Login"
@@ -62,12 +71,13 @@ def admin_dashboard():
     conn = get_db()
     cur = conn.cursor()
     
+    users = cur.execute("SELECT * FROM users").fetchall()
     police = cur.execute("SELECT * FROM police").fetchall()
     complaints = cur.execute("SELECT * FROM complaints").fetchall()
     
     conn.close()
     
-    return render_template("admin_dashboard.html", police=police, complaints=complaints)
+    return render_template("admin_dashboard.html", users=users, police=police, complaints=complaints)
 
 
 # POLICE DASHBOARD
@@ -88,6 +98,28 @@ def police_dashboard():
     conn.close()
     
     return render_template("police_dashboard.html", complaints=complaints)
+
+
+# USER DASHBOARD
+@app.route("/user_dashboard")
+def user_dashboard():
+    if session.get("role") != "user":
+        return redirect("/")
+    
+    user_id = session["user_id"]
+    conn = get_db()
+    cur = conn.cursor()
+    
+    complaints = cur.execute("""
+        SELECT c.*, p.name as police_name, p.department 
+        FROM complaints c 
+        LEFT JOIN police p ON c.assigned_police_id = p.police_id 
+        WHERE c.user_id = ?
+    """, (user_id,)).fetchall()
+    
+    conn.close()
+    
+    return render_template("user_dashboard.html", complaints=complaints)
 
 
 # COMPLAINT FORM (Public)

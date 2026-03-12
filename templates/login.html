@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login - Cyber Crime System</title>
+<title>Login - Cyber Crime Reporting System</title>
 <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
 </head>
 
@@ -21,12 +21,14 @@
     <option value="">Select User Type</option>
     <option value="admin">Admin</option>
     <option value="police">Police Officer</option>
+    <option value="user">Regular User</option>
 </select>
 
 <button type="submit">Login</button>
 
 </form>
 
+<p><a href="/register">Register as New User</a></p>
 <p><a href="/complaint">Submit a Complaint</a></p>
 
 </div>
