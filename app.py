@@ -62,6 +62,33 @@ def login():
     return render_template("login.html")
 
 
+# REGISTER
+@app.route("/register",methods=["GET","POST"])
+def register():
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        password = request.form["password"]
+        address = request.form.get("address", "")
+        phone = request.form.get("phone", "")
+        
+        hashed_password = generate_password_hash(password)
+        
+        conn = get_db()
+        cur = conn.cursor()
+        
+        cur.execute(
+            "INSERT INTO users(name,email,password,address,phone) VALUES(?,?,?,?,?)",
+            (name, email, hashed_password, address, phone))
+        
+        conn.commit()
+        conn.close()
+        
+        return redirect("/")
+    
+    return render_template("register.html")
+
+
 # ADMIN DASHBOARD
 @app.route("/admin_dashboard")
 def admin_dashboard():
