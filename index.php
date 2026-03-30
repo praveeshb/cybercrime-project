@@ -8,7 +8,12 @@ if(isset($_POST['login'])){
     $password=$_POST['password'];
 
     $query=mysqli_query($conn,"SELECT * FROM users WHERE email='$email' AND password='$password'");
-    $user=mysqli_fetch_assoc($query);
+    
+    if($query && mysqli_num_rows($query) > 0){
+        $user=mysqli_fetch_assoc($query);
+    } else {
+        $user = false;
+    }
 
     if($user){
 
