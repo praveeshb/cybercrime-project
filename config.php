@@ -1,7 +1,7 @@
 <?php
-$conn = mysqli_connect("localhost","root","","");
+$conn = mysqli_connect("localhost","root","","cybercrime");
 
 if(!$conn){
-    die("Connection Failed");
+    die("Connection Failed: " . mysqli_connect_error());
 }
 ?>
