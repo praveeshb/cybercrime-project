@@ -7,16 +7,16 @@ if(isset($_POST['login'])){
     $email=$_POST['email'];
     $password=$_POST['password'];
 
-    $query=mysqli_query($conn,"SELECT * FROM users WHERE email='$email' AND password='$password'");
+    // Simple query with error checking
+    $query = mysqli_query($conn, "SELECT * FROM users WHERE email='$email' AND password='$password'");
     
-    if($query && mysqli_num_rows($query) > 0){
-        $user=mysqli_fetch_assoc($query);
-    } else {
-        $user = false;
+    if(!$query) {
+        die("SQL Error: " . mysqli_error($conn));
     }
-
-    if($user){
-
+    
+    if(mysqli_num_rows($query) > 0){
+        $user = mysqli_fetch_assoc($query);
+        
         $_SESSION['user_id']=$user['id'];
         $_SESSION['role']=$user['role'];
 
