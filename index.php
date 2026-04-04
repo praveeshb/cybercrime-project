@@ -6,7 +6,8 @@ if(isset($_POST['login'])){
 
     $email=$_POST['email'];
     $password=$_POST['password'];
-
+    echo $email;
+    echo $password;
     // Simple query with error checking
     $query = mysqli_query($conn, "SELECT * FROM users WHERE email='$email' AND password='$password'");
     
