@@ -13,8 +13,8 @@
 4. The database will be created with demo users
 
 ### 3. Project Setup
-1. Copy the cybercrime-project folder to: `C:\xampp\htdocs\`
-2. Access the application: http://localhost/cybercrime-project/
+1. Copy the cybercrime_project folder to: `C:\xampp\htdocs\`
+2. Access the application: http://localhost/cybercrime_project/
 
 ### 4. Demo Accounts
 - **Admin**: admin@cybercrime.gov / admin123
@@ -30,12 +30,13 @@
 
 ## Project Structure
 ```
-cybercrime-project/
+cybercrime_project/
 ├── config.php              # Database connection
 ├── index.php               # Main login page
 ├── register.php            # User registration
 ├── logout.php              # Logout functionality
 ├── database.sql            # Database schema
+├── test.php                # Database connection test
 ├── uploads/                # File upload directory
 ├── admin/
 │   └── dashboard.php     # Admin dashboard
@@ -47,3 +48,6 @@ cybercrime-project/
     ├── complaint.php      # Submit complaints
     └── track.php          # Track complaints
 ```
+
+## Security Notice
+⚠️ **This is a basic prototype with significant security vulnerabilities including SQL injection, plain text passwords, and broken access controls. Do not use in production without proper security hardening.**
