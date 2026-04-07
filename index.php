@@ -4,8 +4,8 @@ include "config.php";
 
 if(isset($_POST['login'])){
 
-    $email=$_POST['email'];
-    $password=$_POST['password'];
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
     // Execute query with error checking
     $query = mysqli_query($conn, "SELECT * FROM users WHERE email='$email' AND password='$password'");
@@ -16,7 +16,6 @@ if(isset($_POST['login'])){
     
     if(mysqli_num_rows($query) > 0){
         $user = mysqli_fetch_assoc($query);
-        
         $_SESSION['user_id']=$user['id'];
         $_SESSION['role']=$user['role'];
 
