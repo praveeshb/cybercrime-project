@@ -1,14 +1,18 @@
 <?php
 include "../config.php";
+$track_message = "";
 
 if(isset($_POST['track'])){
 
-    $id=$_POST['tracking'];
+    $id = trim($_POST['tracking']);
 
-    $q=mysqli_query($conn,"SELECT * FROM complaints WHERE tracking_id='$id'");
-    $c=mysqli_fetch_assoc($q);
-
-    echo "Status: ".$c['status'];
+    $q = mysqli_query($conn,"SELECT * FROM complaints WHERE tracking_id='$id'");
+    $c = $q ? mysqli_fetch_assoc($q) : null;
+    if($c){
+        $track_message = "Tracking ID: ".$c['tracking_id']." | Status: ".$c['status'];
+    } else {
+        $track_message = "No complaint found for this Tracking ID.";
+    }
 }
 ?>
 
@@ -38,7 +42,7 @@ button { width: 100%; padding: 12px; background: #007bff; color: white; border: 
 
 <?php if(isset($_POST['track'])){ ?>
 <div class="result">
-<?php echo "Status: ".$c['status']; ?>
+<?php echo $track_message; ?>
 </div>
 <?php } ?>
 

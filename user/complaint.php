@@ -1,6 +1,7 @@
 <?php
 session_start();
 include "../config.php";
+$success_message = "";
 
 if($_SESSION['role']!="user"){
     header("Location: ../index.php");
@@ -20,9 +21,10 @@ if(isset($_POST['submit'])){
         $file = "";
     }
 
-    mysqli_query($conn,"INSERT INTO complaints(tracking_id,user_id,description,evidence,status) VALUES('$tracking_id','$user_id','$desc','$file','Pending')");
-
-    echo "Complaint Submitted. Tracking ID: ".$tracking_id;
+    $saved = mysqli_query($conn,"INSERT INTO complaints(tracking_id,user_id,description,evidence,status) VALUES('$tracking_id','$user_id','$desc','$file','Pending')");
+    if($saved){
+        $success_message = "Complaint submitted successfully. Your Tracking ID is: ".$tracking_id;
+    }
 }
 ?>
 
@@ -37,6 +39,7 @@ textarea { width: 100%; height: 120px; padding: 10px; border: 1px solid #ddd; bo
 input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin: 10px 0; }
 button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
 button:hover { background: #218838; }
+.success { margin: 12px 0; padding: 12px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; }
 </style>
 </head>
 
@@ -45,6 +48,10 @@ button:hover { background: #218838; }
 <div class="container">
 
 <h2>Submit Cyber Crime Complaint</h2>
+
+<?php if($success_message){ ?>
+<div class="success"><?php echo $success_message; ?></div>
+<?php } ?>
 
 <form method="POST" enctype="multipart/form-data">
 
