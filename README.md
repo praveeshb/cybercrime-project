@@ -28,6 +28,44 @@
 - Police dashboard for case investigation
 - Complaint tracking system
 
+## Data Flow Diagram (DFD)
+
+This project follows a role-based complaint handling flow between three external entities:
+- User
+- Admin
+- Cyber Crime Department (Police)
+
+### Level-0 (Context-Level DFD)
+
+At a high level, all actors interact with the Cybercrime Reporting System:
+- User sends registration/login details, complaint details, and receives complaint status.
+- Admin sends login data, retrieves complaint/user records, and sends verification or update actions.
+- Police sends login data, receives approved complaint details, and sends investigation status updates.
+
+### Level-1 (Process-Level DFD)
+
+#### User Flow
+- Register/Login process stores and retrieves user login details.
+- Complaint process stores complaint details.
+- Complaint Status process retrieves case status for tracking.
+
+#### Admin Flow
+- Admin Login retrieves admin credentials.
+- View Complaint Verification retrieves complaint details for validation.
+- Complaint Update/Delete updates and manages complaint records.
+
+#### Police Flow
+- Police Register/Login saves and retrieves police login details.
+- Complaint Approval process retrieves complaint details and marks accepted cases.
+- Investigation Update process saves and retrieves investigation status updates.
+
+### Data Stores Referenced in DFD
+- User Login data
+- Admin Login data
+- Police Login data
+- Complaint Details
+- Complaint Status / Investigation Status
+
 ## Project Structure
 ```
 cybercrime_project/
