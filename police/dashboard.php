@@ -21,8 +21,10 @@ body { font-family: Arial, sans-serif; background: #f5f5f5; }
 table { width: 100%; border-collapse: collapse; margin: 20px 0; }
 th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
 th { background: #f8f9fa; }
-.btn { padding: 8px 15px; background: #ffc107; color: black; text-decoration: none; border-radius: 4px; }
-.btn:hover { background: #e0a800; }
+.action-form { display: flex; gap: 8px; align-items: center; }
+.action-form select { padding: 7px 9px; border: 1px solid #ccc; border-radius: 4px; }
+.btn { padding: 8px 15px; background: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer; }
+.btn:hover { background: #0b5ed7; }
 </style>
 </head>
 
@@ -52,7 +54,15 @@ th { background: #f8f9fa; }
 <td><?php echo substr($c['description'],0,50).'...'; ?></td>
 <td><?php echo $c['status']; ?></td>
 <td>
-<a href="update.php?id=<?php echo $c['id']; ?>" class="btn">Investigate</a>
+<form method="POST" action="update.php" class="action-form">
+    <input type="hidden" name="id" value="<?php echo $c['id']; ?>">
+    <select name="status" required>
+        <option value="Pending" <?php if($c['status']=="Pending") echo "selected"; ?>>Pending</option>
+        <option value="Investigating" <?php if($c['status']=="Investigating") echo "selected"; ?>>Investigating</option>
+        <option value="Completed" <?php if($c['status']=="Completed") echo "selected"; ?>>Completed</option>
+    </select>
+    <button type="submit" class="btn">Update</button>
+</form>
 </td>
 </tr>
 <?php } ?>
