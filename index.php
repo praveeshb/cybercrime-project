@@ -67,8 +67,9 @@ h2 { color: #1d1d1d; margin-bottom: 20px; }
 input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
 button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
 button:hover { background: #0056b3; }
-a { display: block; text-align: center; margin: 15px 0; color: #007bff; text-decoration: none; }
+a { display: block; text-align: center; margin: 0; color: #007bff; text-decoration: none; }
 a:hover { text-decoration: underline; }
+.links { margin-top: 14px; display: grid; gap: 8px; }
 .credit {
     position: fixed;
     right: 24px;
@@ -100,7 +101,10 @@ a:hover { text-decoration: underline; }
 
 </form>
 
+<div class="links">
+<a href="forgot_password.php">Forgot Password?</a>
 <a href="register.php">Register</a>
+</div>
 
 </div>
 

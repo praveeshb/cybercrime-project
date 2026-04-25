@@ -5,18 +5,49 @@ $messageClass = "";
 
 if(isset($_POST['register'])){
 
-    $name=$_POST['name'];
-    $email=$_POST['email'];
+    $name=trim($_POST['name']);
+    $email=trim($_POST['email']);
     $password=$_POST['password'];
+    $aadhaar=trim($_POST['aadhaar']);
+    $phone=trim($_POST['phone']);
+    $address=trim($_POST['address']);
 
     $passwordPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).+$/';
-    if (!preg_match($passwordPattern, $password)) {
+    if ($name === "" || $email === "" || $password === "" || $aadhaar === "" || $phone === "" || $address === "") {
+        $message = "All fields are mandatory for registration.";
+        $messageClass = "error";
+    } elseif (!preg_match($passwordPattern, $password)) {
         $message = "Password must include uppercase, lowercase, number, and special symbol (!@#$%^&*).";
         $messageClass = "error";
+    } elseif (!preg_match('/^\d{12}$/', $aadhaar)) {
+        $message = "Aadhaar must be exactly 12 digits.";
+        $messageClass = "error";
+    } elseif (!preg_match('/^\d{10,15}$/', $phone)) {
+        $message = "Phone number must be 10 to 15 digits.";
+        $messageClass = "error";
+    } elseif ($address === "") {
+        $message = "Address is required.";
+        $messageClass = "error";
     } else {
-        mysqli_query($conn,"INSERT INTO users(name,email,password,role) VALUES('$name','$email','$password','user')");
-        $message = "Registered Successfully";
-        $messageClass = "success";
+        $escapedName = mysqli_real_escape_string($conn, $name);
+        $escapedEmail = mysqli_real_escape_string($conn, $email);
+        $escapedPassword = mysqli_real_escape_string($conn, $password);
+        $escapedAadhaar = mysqli_real_escape_string($conn, $aadhaar);
+        $escapedPhone = mysqli_real_escape_string($conn, $phone);
+        $escapedAddress = mysqli_real_escape_string($conn, $address);
+
+        $saved = mysqli_query(
+            $conn,
+            "INSERT INTO users(name,email,password,role,aadhaar,phone,address) VALUES('$escapedName','$escapedEmail','$escapedPassword','user','$escapedAadhaar','$escapedPhone','$escapedAddress')"
+        );
+
+        if($saved){
+            $message = "Registered Successfully";
+            $messageClass = "success";
+        } else {
+            $message = "Registration failed: " . mysqli_error($conn);
+            $messageClass = "error";
+        }
     }
 }
 ?>
@@ -89,7 +120,7 @@ button:hover { filter: brightness(0.95); }
 a {
     display: block;
     text-align: center;
-    margin-top: 18px;
+    margin-top: 14px;
     color: #007bff;
     text-decoration: none;
     font-weight: 600;
@@ -105,6 +136,7 @@ a:hover { text-decoration: underline; }
     border-left: 4px solid #1991ff;
     border-radius: 8px;
     box-sizing: border-box;
+    display: none;
 }
 .msg {
     margin: 0 0 16px;
@@ -140,8 +172,14 @@ a:hover { text-decoration: underline; }
 
 <input type="email" name="email" placeholder="Email" required>
 
-<input type="password" name="password" placeholder="Password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).+" title="Use uppercase, lowercase, number, and special symbol (!@#$%^&*)" required>
-<p class="hint">Use uppercase, lowercase, numbers, and special symbols (!@#$%^&*).</p>
+<input type="password" id="password" name="password" placeholder="Password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).+" title="Use uppercase, lowercase, number, and special symbol (!@#$%^&*)" required>
+<p class="hint" id="passwordHint">Use uppercase, lowercase, numbers, and special symbols (!@#$%^&*).</p>
+
+<input type="text" name="aadhaar" placeholder="Aadhaar (12 digits)" pattern="\d{12}" title="Enter 12 digit Aadhaar number" required>
+
+<input type="text" name="phone" placeholder="Phone Number (10-15 digits)" pattern="\d{10,15}" title="Enter valid phone number" required>
+
+<input type="text" name="address" placeholder="Address" required>
 
 <button name="register">Register</button>
 
@@ -150,6 +188,23 @@ a:hover { text-decoration: underline; }
 <a href="index.php">Back to Login</a>
 
 </div>
+
+<script>
+const passwordInput = document.getElementById('password');
+const passwordHint = document.getElementById('passwordHint');
+
+passwordInput.addEventListener('focus', function () {
+    passwordHint.style.display = 'block';
+});
+
+passwordInput.addEventListener('blur', function () {
+    passwordHint.style.display = 'none';
+});
+
+passwordInput.addEventListener('input', function () {
+    passwordHint.style.display = 'block';
+});
+</script>
 
 </body>
 </html>

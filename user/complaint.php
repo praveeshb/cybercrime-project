@@ -16,6 +16,12 @@ if(isset($_POST['submit'])){
 
     $file=$_FILES['file']['name'];
     if($file){
+        if(!is_dir("../uploads")){
+            mkdir("../uploads", 0777, true);
+        }
+        $originalName = basename($file);
+        $safeName = preg_replace("/[^A-Za-z0-9._-]/", "_", $originalName);
+        $file = time() . "_" . $safeName;
         move_uploaded_file($_FILES['file']['tmp_name'],"../uploads/".$file);
     } else {
         $file = "";
@@ -33,13 +39,16 @@ if(isset($_POST['submit'])){
 <head>
 <title>Submit Complaint</title>
 <style>
-body { font-family: Arial, sans-serif; background: #f5f5f5; }
-.container { max-width: 800px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-textarea { width: 100%; height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin: 10px 0; }
+* { box-sizing: border-box; }
+body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fb; }
+.container { max-width: 800px; margin: 36px auto; padding: 24px; background: white; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+textarea { width: 100%; height: 120px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin: 10px 0; resize: vertical; }
 input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin: 10px 0; }
-button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 4px; }
 button:hover { background: #218838; }
 .success { margin: 12px 0; padding: 12px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; }
+a { color: #0d6efd; text-decoration: none; font-weight: 600; }
+a:hover { text-decoration: underline; }
 </style>
 </head>
 

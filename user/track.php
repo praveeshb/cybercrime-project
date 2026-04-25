@@ -21,11 +21,15 @@ if(isset($_POST['track'])){
 <head>
 <title>Track Complaint</title>
 <style>
-body { font-family: Arial, sans-serif; background: #f5f5f5; }
-.container { max-width: 500px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+* { box-sizing: border-box; }
+body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fb; }
+.container { max-width: 540px; margin: 36px auto; padding: 24px; background: white; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
 input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
-button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 4px; }
+button:hover { background: #0056b3; }
 .result { padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; margin: 10px 0; }
+a { color: #0d6efd; text-decoration: none; font-weight: 600; }
+a:hover { text-decoration: underline; }
 </style>
 </head>
 

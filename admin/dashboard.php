@@ -19,15 +19,27 @@ if(isset($_POST['update_user'])){
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
     $role = trim($_POST['role']);
+    $aadhaar = trim($_POST['aadhaar']);
+    $phone = trim($_POST['phone']);
+    $address = trim($_POST['address']);
 
-    if($name === "" || $email === "" || $role === ""){
+    if($name === "" || $email === "" || $role === "" || $aadhaar === "" || $phone === "" || $address === ""){
         $message = "All user fields are required for update.";
+        $messageClass = "error";
+    } elseif (!preg_match('/^\d{12}$/', $aadhaar)) {
+        $message = "Aadhaar must be exactly 12 digits.";
+        $messageClass = "error";
+    } elseif (!preg_match('/^\d{10,15}$/', $phone)) {
+        $message = "Phone number must be 10 to 15 digits.";
         $messageClass = "error";
     } else {
         $escapedName = mysqli_real_escape_string($conn, $name);
         $escapedEmail = mysqli_real_escape_string($conn, $email);
         $escapedRole = mysqli_real_escape_string($conn, $role);
-        $query = "UPDATE users SET name='$escapedName', email='$escapedEmail', role='$escapedRole' WHERE id=$userId";
+        $escapedAadhaar = mysqli_real_escape_string($conn, $aadhaar);
+        $escapedPhone = mysqli_real_escape_string($conn, $phone);
+        $escapedAddress = mysqli_real_escape_string($conn, $address);
+        $query = "UPDATE users SET name='$escapedName', email='$escapedEmail', role='$escapedRole', aadhaar='$escapedAadhaar', phone='$escapedPhone', address='$escapedAddress' WHERE id=$userId";
 
         if(mysqli_query($conn, $query)){
             $message = "User updated successfully.";
@@ -51,6 +63,28 @@ if(isset($_POST['delete_user'])){
             $messageClass = "success";
         } else {
             $message = "Delete failed: " . mysqli_error($conn);
+            $messageClass = "error";
+        }
+    }
+}
+
+if(isset($_POST['update_complaint_status'])){
+    $complaintId = (int)$_POST['complaint_id'];
+    $status = trim($_POST['status']);
+    $allowedStatuses = array("Pending", "Investigating", "Completed");
+
+    if(!in_array($status, $allowedStatuses, true)){
+        $message = "Invalid complaint status selected.";
+        $messageClass = "error";
+    } else {
+        $escapedStatus = mysqli_real_escape_string($conn, $status);
+        $query = "UPDATE complaints SET status='$escapedStatus' WHERE id=$complaintId";
+
+        if(mysqli_query($conn, $query)){
+            $message = "Complaint status updated successfully.";
+            $messageClass = "success";
+        } else {
+            $message = "Complaint status update failed: " . mysqli_error($conn);
             $messageClass = "error";
         }
     }
@@ -141,6 +175,9 @@ th {
 .msg.success { background: #eafaf1; color: #166534; border: 1px solid #bbf7d0; }
 .msg.error { background: #fdecec; color: #b42318; border: 1px solid #fecaca; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.actions form { margin: 0; }
+.user-edit-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.status-form { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .actions input, .actions select {
     padding: 8px 10px;
     border: 1px solid #cbd5e1;
@@ -192,6 +229,9 @@ th {
 <th>ID</th>
 <th>Name</th>
 <th>Email</th>
+<th>Aadhaar</th>
+<th>Phone</th>
+<th>Address</th>
 <th>Role</th>
 <th>Actions</th>
 </tr>
@@ -201,13 +241,19 @@ th {
 <td><?php echo $u['id']; ?></td>
 <td><?php echo htmlspecialchars($u['name']); ?></td>
 <td><?php echo htmlspecialchars($u['email']); ?></td>
+<td><?php echo htmlspecialchars($u['aadhaar'] ?? ''); ?></td>
+<td><?php echo htmlspecialchars($u['phone'] ?? ''); ?></td>
+<td><?php echo htmlspecialchars($u['address'] ?? ''); ?></td>
 <td><span class="badge <?php echo $u['role']; ?>"><?php echo $u['role']; ?></span></td>
 <td>
     <div class="actions">
-        <form method="POST">
+        <form method="POST" class="user-edit-form">
             <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
             <input type="text" name="name" value="<?php echo htmlspecialchars($u['name']); ?>" required>
             <input type="email" name="email" value="<?php echo htmlspecialchars($u['email']); ?>" required>
+            <input type="text" name="aadhaar" value="<?php echo htmlspecialchars($u['aadhaar'] ?? ''); ?>" pattern="\d{12}" title="Enter 12 digit Aadhaar number" required>
+            <input type="text" name="phone" value="<?php echo htmlspecialchars($u['phone'] ?? ''); ?>" pattern="\d{10,15}" title="Enter valid phone number" required>
+            <input type="text" name="address" value="<?php echo htmlspecialchars($u['address'] ?? ''); ?>" required>
             <select name="role" required>
                 <option value="user" <?php if($u['role']=="user") echo "selected"; ?>>user</option>
                 <option value="police" <?php if($u['role']=="police") echo "selected"; ?>>police</option>
@@ -238,16 +284,36 @@ th {
 <th>Tracking ID</th>
 <th>User ID</th>
 <th>Description</th>
+<th>Evidence</th>
 <th>Status</th>
+<th>Action</th>
 </tr>
 
 <?php while($c=mysqli_fetch_assoc($complaints)){ ?>
 <tr>
 <td><?php echo $c['id']; ?></td>
-<td><?php echo $c['tracking_id']; ?></td>
+<td><?php echo htmlspecialchars($c['tracking_id']); ?></td>
 <td><?php echo $c['user_id']; ?></td>
-<td><?php echo substr($c['description'],0,50).'...'; ?></td>
-<td><?php echo $c['status']; ?></td>
+<td><?php echo htmlspecialchars(substr($c['description'],0,50)).'...'; ?></td>
+<td>
+    <?php if(!empty($c['evidence'])){ ?>
+    <a href="../uploads/<?php echo urlencode($c['evidence']); ?>" target="_blank">View File</a>
+    <?php } else { ?>
+    <span style="color:#64748b;">No file</span>
+    <?php } ?>
+</td>
+<td><?php echo htmlspecialchars($c['status']); ?></td>
+<td>
+    <form method="POST" class="status-form">
+        <input type="hidden" name="complaint_id" value="<?php echo $c['id']; ?>">
+        <select name="status" required>
+            <option value="Pending" <?php if($c['status']=="Pending") echo "selected"; ?>>Pending</option>
+            <option value="Investigating" <?php if($c['status']=="Investigating") echo "selected"; ?>>Investigating</option>
+            <option value="Completed" <?php if($c['status']=="Completed") echo "selected"; ?>>Completed</option>
+        </select>
+        <button type="submit" class="btn btn-update" name="update_complaint_status">Update</button>
+    </form>
+</td>
 </tr>
 <?php } ?>
 

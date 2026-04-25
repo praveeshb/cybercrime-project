@@ -14,14 +14,15 @@ $my_complaints = mysqli_query($conn, "SELECT tracking_id, status, description FR
 <head>
 <title>User Dashboard</title>
 <style>
-body { font-family: Arial, sans-serif; background: #f5f5f5; }
-.container { max-width: 1000px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-.nav { background: #343a40; padding: 10px; text-align: right; }
-.nav a { color: white; text-decoration: none; margin: 0 10px; }
+* { box-sizing: border-box; }
+body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fb; }
+.container { max-width: 1100px; margin: 24px auto; padding: 24px; background: white; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.nav { background: #1f2937; padding: 12px 18px; text-align: right; }
+.nav a { color: white; text-decoration: none; margin-left: 14px; font-weight: 600; }
 table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
 th { background: #f8f9fa; }
-.btn { padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+.btn { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; margin-top: 6px; }
 .muted { color: #6c757d; }
 </style>
 </head>
