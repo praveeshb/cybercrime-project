@@ -5,8 +5,13 @@ if($_SESSION['role']!="user"){
     header("Location: ../index.php");
 }
 
-$user_id = $_SESSION['user_id'];
-$my_complaints = mysqli_query($conn, "SELECT tracking_id, status, description FROM complaints WHERE user_id='$user_id' ORDER BY id DESC");
+$user_id = (int)$_SESSION['user_id'];
+$user_name = '';
+$nameRes = mysqli_query($conn, "SELECT name FROM users WHERE id=$user_id LIMIT 1");
+if ($nameRes && $nameRow = mysqli_fetch_assoc($nameRes)) {
+    $user_name = trim($nameRow['name']);
+}
+$my_complaints = mysqli_query($conn, "SELECT tracking_id, status, description FROM complaints WHERE user_id=$user_id ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>
@@ -46,6 +51,20 @@ body {
     border-radius: 16px;
     box-shadow: 0 18px 35px rgba(15, 23, 42, 0.22);
     backdrop-filter: blur(4px);
+}
+.user-name-top {
+    margin: 0 0 10px;
+    font-size: 15px;
+    color: #475569;
+    font-weight: 600;
+}
+.user-name-top strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
 }
 h2 {
     margin: 0 0 8px;
@@ -117,7 +136,9 @@ tr:last-child td { border-bottom: none; }
 
 <div class="container">
 
-<h2>User Dashboard</h2>
+<p class="user-name-top">Hello, <strong><?php echo htmlspecialchars($user_name !== '' ? $user_name : 'User'); ?></strong></p>
+
+
 
 <p>Welcome! You can submit new complaints or track existing ones.</p>
 

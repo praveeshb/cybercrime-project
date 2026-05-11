@@ -15,10 +15,39 @@ $complaints=mysqli_query($conn,"SELECT complaints.*, users.name AS user_name, us
 <title>Police Dashboard</title>
 <style>
 * { box-sizing: border-box; }
-body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fb; }
-.container { max-width: 1250px; margin: 24px auto; padding: 24px; background: white; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-.nav { background: #1f2937; padding: 12px 18px; text-align: right; }
-.nav a { color: white; text-decoration: none; margin-left: 14px; font-weight: 600; }
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    background-color: #0b1220;
+    /* Overlay + two images: cyber theme on top of global login backdrop */
+    background-image:
+        linear-gradient(rgba(6, 18, 40, 0.74), rgba(8, 22, 48, 0.82)),
+        url('../assets/police-dashboard-bg.png'),
+        url('../assets/login-bg.png');
+    background-size: cover, cover, cover;
+    background-position: center, center, center;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-attachment: fixed, fixed, fixed;
+}
+.container {
+    max-width: 1250px;
+    margin: 24px auto;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.nav {
+    background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.94));
+    padding: 14px 22px;
+    text-align: right;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+.nav a { color: #fff; text-decoration: none; margin-left: 14px; font-weight: 600; }
+.nav a:hover { text-decoration: underline; }
+h2 { margin: 0 0 16px; color: #0f172a; font-size: 26px; }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; margin: 16px 0; }
 th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }

@@ -16,37 +16,48 @@ $messageClass = "";
 
 if(isset($_POST['update_user'])){
     $userId = (int)$_POST['user_id'];
-    $name = trim($_POST['name']);
-    $email = trim($_POST['email']);
-    $role = trim($_POST['role']);
-    $aadhaar = trim($_POST['aadhaar']);
-    $phone = trim($_POST['phone']);
-    $address = trim($_POST['address']);
+    $checkRes = mysqli_query($conn, "SELECT id, role FROM users WHERE id=$userId LIMIT 1");
 
-    if($name === "" || $email === "" || $role === "" || $aadhaar === "" || $phone === "" || $address === ""){
-        $message = "All user fields are required for update.";
-        $messageClass = "error";
-    } elseif (!preg_match('/^\d{12}$/', $aadhaar)) {
-        $message = "Aadhaar must be exactly 12 digits.";
-        $messageClass = "error";
-    } elseif (!preg_match('/^\d{10,15}$/', $phone)) {
-        $message = "Phone number must be 10 to 15 digits.";
+    if(!$checkRes || mysqli_num_rows($checkRes) === 0){
+        $message = "User not found.";
         $messageClass = "error";
     } else {
-        $escapedName = mysqli_real_escape_string($conn, $name);
-        $escapedEmail = mysqli_real_escape_string($conn, $email);
-        $escapedRole = mysqli_real_escape_string($conn, $role);
-        $escapedAadhaar = mysqli_real_escape_string($conn, $aadhaar);
-        $escapedPhone = mysqli_real_escape_string($conn, $phone);
-        $escapedAddress = mysqli_real_escape_string($conn, $address);
-        $query = "UPDATE users SET name='$escapedName', email='$escapedEmail', role='$escapedRole', aadhaar='$escapedAadhaar', phone='$escapedPhone', address='$escapedAddress' WHERE id=$userId";
-
-        if(mysqli_query($conn, $query)){
-            $message = "User updated successfully.";
-            $messageClass = "success";
-        } else {
-            $message = "Update failed: " . mysqli_error($conn);
+        $targetUser = mysqli_fetch_assoc($checkRes);
+        if($targetUser['role'] !== 'police'){
+            $message = "Only police officer details can be updated. Citizen and admin accounts cannot be edited here.";
             $messageClass = "error";
+        } else {
+            $name = trim($_POST['name']);
+            $email = trim($_POST['email']);
+            $aadhaar = trim($_POST['aadhaar']);
+            $phone = trim($_POST['phone']);
+            $address = trim($_POST['address']);
+
+            if($name === "" || $email === "" || $aadhaar === "" || $phone === "" || $address === ""){
+                $message = "All fields are required for update.";
+                $messageClass = "error";
+            } elseif (strlen($aadhaar) !== 12 || !ctype_digit($aadhaar)) {
+                $message = "Aadhaar must be exactly 12 digits (numbers only).";
+                $messageClass = "error";
+            } elseif (!preg_match('/^\d{10,15}$/', $phone)) {
+                $message = "Phone number must be 10 to 15 digits.";
+                $messageClass = "error";
+            } else {
+                $escapedName = mysqli_real_escape_string($conn, $name);
+                $escapedEmail = mysqli_real_escape_string($conn, $email);
+                $escapedAadhaar = mysqli_real_escape_string($conn, $aadhaar);
+                $escapedPhone = mysqli_real_escape_string($conn, $phone);
+                $escapedAddress = mysqli_real_escape_string($conn, $address);
+                $query = "UPDATE users SET name='$escapedName', email='$escapedEmail', aadhaar='$escapedAadhaar', phone='$escapedPhone', address='$escapedAddress' WHERE id=$userId AND role='police'";
+
+                if(mysqli_query($conn, $query)){
+                    $message = "Police officer updated successfully.";
+                    $messageClass = "success";
+                } else {
+                    $message = "Update failed: " . mysqli_error($conn);
+                    $messageClass = "error";
+                }
+            }
         }
     }
 }
@@ -58,12 +69,22 @@ if(isset($_POST['delete_user'])){
         $message = "You cannot delete your own admin account.";
         $messageClass = "error";
     } else {
-        if(mysqli_query($conn, "DELETE FROM users WHERE id=$userId")){
-            $message = "User deleted successfully.";
-            $messageClass = "success";
-        } else {
-            $message = "Delete failed: " . mysqli_error($conn);
+        $roleRes = mysqli_query($conn, "SELECT role FROM users WHERE id=$userId LIMIT 1");
+        if(!$roleRes || mysqli_num_rows($roleRes) === 0){
+            $message = "User not found.";
             $messageClass = "error";
+        } else {
+            $targetRow = mysqli_fetch_assoc($roleRes);
+            if($targetRow['role'] === 'admin'){
+                $message = "Admin accounts cannot be deleted from this dashboard.";
+                $messageClass = "error";
+            } elseif(mysqli_query($conn, "DELETE FROM users WHERE id=$userId")){
+                $message = "User deleted successfully.";
+                $messageClass = "success";
+            } else {
+                $message = "Delete failed: " . mysqli_error($conn);
+                $messageClass = "error";
+            }
         }
     }
 }
@@ -205,6 +226,12 @@ th {
 .badge.admin { background: #fee2e2; color: #991b1b; }
 .badge.police { background: #dbeafe; color: #1e3a8a; }
 .badge.user { background: #dcfce7; color: #166534; }
+.action-note {
+    color: #64748b;
+    font-size: 13px;
+    max-width: 220px;
+    line-height: 1.4;
+}
 </style>
 </head>
 
@@ -247,25 +274,26 @@ th {
 <td><span class="badge <?php echo $u['role']; ?>"><?php echo $u['role']; ?></span></td>
 <td>
     <div class="actions">
+        <?php if($u['role'] === 'police'){ ?>
         <form method="POST" class="user-edit-form">
             <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
             <input type="text" name="name" value="<?php echo htmlspecialchars($u['name']); ?>" required>
             <input type="email" name="email" value="<?php echo htmlspecialchars($u['email']); ?>" required>
-            <input type="text" name="aadhaar" value="<?php echo htmlspecialchars($u['aadhaar'] ?? ''); ?>" pattern="\d{12}" title="Enter 12 digit Aadhaar number" required>
+            <input type="text" name="aadhaar" value="<?php echo htmlspecialchars($u['aadhaar'] ?? ''); ?>" maxlength="12" minlength="12" inputmode="numeric" pattern="[0-9]{12}" title="Exactly 12 digits, numbers only" required oninput="this.value=this.value.replace(/\D/g,'').slice(0,12)" onpaste="event.preventDefault();var t=(event.clipboardData||window.clipboardData).getData('text')||'';this.value=t.replace(/\D/g,'').slice(0,12);">
             <input type="text" name="phone" value="<?php echo htmlspecialchars($u['phone'] ?? ''); ?>" pattern="\d{10,15}" title="Enter valid phone number" required>
             <input type="text" name="address" value="<?php echo htmlspecialchars($u['address'] ?? ''); ?>" required>
-            <select name="role" required>
-                <option value="user" <?php if($u['role']=="user") echo "selected"; ?>>user</option>
-                <option value="police" <?php if($u['role']=="police") echo "selected"; ?>>police</option>
-                <option value="admin" <?php if($u['role']=="admin") echo "selected"; ?>>admin</option>
-            </select>
-            <button type="submit" class="btn btn-update" name="update_user">Update</button>
+            <button type="submit" class="btn btn-update" name="update_user">Update police</button>
         </form>
+        <?php } else { ?>
+        <span class="action-note">Editing is only available for police accounts.</span>
+        <?php } ?>
 
+        <?php if($u['role'] !== 'admin'){ ?>
         <form method="POST" onsubmit="return confirm('Delete this user?');">
             <input type="hidden" name="user_id" value="<?php echo $u['id']; ?>">
             <button type="submit" class="btn btn-delete" name="delete_user">Delete</button>
         </form>
+        <?php } ?>
     </div>
 </td>
 </tr>
